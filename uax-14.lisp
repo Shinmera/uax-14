@@ -42,8 +42,15 @@
           do (setf i (read-sequence +line-break-map+ stream :start i)))
     +line-break-map+))
 
-(defun char-line-break-type (char)
-  (aref +line-break-type-map+ (aref +line-break-map+ (char-code char))))
-
 (when (probe-file *line-break-database-file*)
   (load-line-break-database))
+
+(declare (inline char-line-break-id))
+(defun char-line-break-id (char)
+  (aref +line-break-map+ (char-code char)))
+
+(defun char-line-break-type (char)
+  (aref +line-break-type-map+ (char-line-break-id char)))
+
+(defun find-line-breaks (string breaks)
+  )
