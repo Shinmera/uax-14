@@ -81,7 +81,9 @@
   (if breaker
       (setf (breaker-string breaker) string)
       (setf breaker (%make-breaker string)))
-  (multiple-value-bind (code new-pos) (code-point-at string 0)
+  (multiple-value-bind (code new-pos) (if (string/= "" string)
+                                          (code-point-at string 0)
+                                          (values 0 0))
     (let ((first-class (normalize-break-id (line-break-id code))))
       (setf (breaker-pos breaker) new-pos)
       (setf (breaker-last-pos breaker) 0)
