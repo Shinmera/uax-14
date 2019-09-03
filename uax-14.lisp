@@ -165,7 +165,9 @@
                                          (handle-extra-rules)))
                                       ((= pair (pair-id :CP))
                                        (when (= last-class (type-id :SP))
-                                         (handle-extra-rules)))))))
+                                         (handle-extra-rules)))
+                                      (T
+                                       (handle-extra-rules))))))
                      (cond (next-current
                             (setf cur-class next-current))
                            (T
