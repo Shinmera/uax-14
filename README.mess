@@ -12,31 +12,31 @@ The system will compile binary database files on first load. Should anything go 
 
 Once loaded, you can produce a list of line breaks for a string with ``list-breaks`` or break a string at every opportunity with ``break-string``. Typically however you will want to scan for the next break as you move along the string during layouting. To do so, create a breaker with ``make-breaker``, and call ``next-break`` whenever the next line break opportunity is required.
 
-In pseudo-code, that could look something like this, with extra code to handle emergencies.:
+In pseudo-code, that could look something like this. We assume the local nickname ``uax-14`` for ``org.shirakumo.alloy.uax-14`` here.
 
 ::common lisp
 (loop with breaker = (uax-14:make-breaker string)
-      with start = 0
-      for last = 0 then pos
-      for (pos mandatory) = (uax-14:next-break breaker)
-      do (cond (mandatory
-                (insert-break pos)
-                (setf start pos))
-               ((beyond-extents-p start pos)
-                (if (< last start) ; Force a break if we are overfull.
-                    (loop while (beyond-extents-p start pos)
-                          do (let ((next (find-last-fitting-cluster start)))
-                               (insert-break next)
-                               (setf start next))
-                          finally (setf pos start))
-                    (insert-break last)))))
+      with start = 0 and last = 0
+      do (multiple-value-bind (pos mandatory) (uax-14:next-break breaker)
+           (cond (mandatory
+                  (insert-break pos)
+                  (setf start pos))
+                 ((beyond-extents-p start pos)
+                  (if (< last start) ; Force a break if we are overfull.
+                      (loop while (beyond-extents-p start pos)
+                            do (let ((next (find-last-fitting-cluster start)))
+                                 (insert-break next)
+                                 (setf start next))
+                            finally (setf pos start))
+                      (insert-break last))))
+           (setf last pos)))
 ::
 
 ## External Files
 The following files are from their corresponding external sources, last accessed on 2019.09.03:
 
-* ``LineBreak.txt`` https://www.unicode.org/Public/UCD/latest/ucd/LineBreak.txt
-* ``LineBreakTest.txt`` https://www.unicode.org/Public/UCD/latest/ucd/auxiliary/LineBreakTest.txt
+- ``LineBreak.txt`` https://www.unicode.org/Public/UCD/latest/ucd/LineBreak.txt
+- ``LineBreakTest.txt`` https://www.unicode.org/Public/UCD/latest/ucd/auxiliary/LineBreakTest.txt
 
 At the time, Unicode 12.1 was considered the latest version.
 

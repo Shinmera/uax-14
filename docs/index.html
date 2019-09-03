@@ -1,0 +1,138 @@
+<!DOCTYPE html> <html lang="EN"> <head> <meta charset="utf-8"> <title>Uax 14</title> <style>html body{margin:0 auto 0 auto;padding:20px;max-width:1024px;font-family:sans-serif;font-size:14pt;overflow-y:scroll;}html body a{text-decoration:none;}html body a[href]{color:#0055AA;}html body a[href]:hover{color:#0088EE;}html body pre{background:#FAFAFA;border:1px solid #DDDDDD;padding:0.75em;overflow-x:auto;}html body pre >code a[href]{color:#223388;}article.project h1,article.project h2,article.project h3,article.project h4,article.project h5,article.project h6{margin:0.2em 0 0.1em 0;text-indent:1em;}article.project >header{text-align:center;}article.project >header img.logo{display:block;margin:auto;max-height:170px;}article.project >header h1{display:inline-block;text-indent:0;font-size:2.5em;}article.project >header .version{vertical-align:bottom;}article.project >header .languages{margin-top:-0.5em;text-transform:capitalize;}article.project >header .description{margin:0;}article.project >header .pages{margin-top:0.5em;font-size:1.2em;text-transform:capitalize;}article.project >header .pages a{display:inline-block;padding:0 0.2em;}article.project >section{margin:1em 0 1em 0;}article.project #index >ul{list-style:none;margin:0;padding:0;}article.project .row label{display:inline-block;min-width:6em;}article.project #system .row{display:flex;}article.project #system #dependencies{display:inline;margin:0;padding:0;}article.project #system #dependencies li{display:inline;padding:0 0.2em;}article.definition{margin:1em 0 0 0;}article.definition >header h1,article.definition >header h2,article.definition >header h3,article.definition >header h4,article.definition >header h5,article.definition >header h6{text-indent:0;display:inline-block;}article.definition >header ul{display:inline-block;list-style:none;margin:0;padding:0;}article.definition >header ul li{display:inline-block;padding:0 0.2em 0 0;}article.definition >header .visibility{display:none;}article.definition >header .visibility,article.definition >header .type{text-transform:lowercase;}article.definition >header .source-link{visibility:hidden;float:right;}article.definition >header .source-link:after{visibility:visible;content:"[SRC]";}article.definition .docstring{margin:0 0 0 1em;}article.definition .docstring pre{font-size:0.8em;white-space:pre-wrap;}.definition.package >header ul.nicknames{display:inline-block;list-style:none;margin:0;padding:0 0 0 1em;}.definition.package >header ul.nicknames li{display:inline;}.definition.package >header ul.nicknames:before{content:"(";}.definition.package >header ul.nicknames:after{content:")";}.definition.package ul.definitions{margin:0;list-style:none;padding:0 0 0 0.5em;}.definition.callable >header .name:before,.definition.type >header .name:before{content:"(";font-weight:normal;}.definition.callable >header .arguments:after,.definition.type >header .arguments:after{content:")";}.definition.callable >header .arguments .arguments:before,.definition.type >header .arguments .arguments:before{content:"(";}.definition.callable >header .arguments .argument,.definition.type >header .arguments .argument{padding:0;}.definition.callable >header .arguments .argument.lambda-list-keyword,.definition.type >header .arguments .argument.lambda-list-keyword{color:#991155;}.definition li>mark{background:none;border-left:0.3em solid #0088EE;padding-left:0.3em;display:block;}</style> </head> <body> <article class="project"> <header>  <h1>uax 14</h1>  <span class="version">1.0.0</span>  <nav class="languages">  </nav>  <p class="description">Implementation of the Unicode Standards Annex #14's line breaking algorithm</p>  <nav class="pages">  </nav> </header> <section id="documentation"><article><h2 id="About UAX-14">About UAX-14</h2><p>This is an implementation of the <a class="external-link" href="http://www.unicode.org/reports/tr14/">Unicode Standards Annex #14</a>'s line breaking algorithm. It provides a fast and convenient way to determine line breaking opportunities in text.</p><p>Note that this algorithm does not support break opportunities that require morphological analysis. In order to handle such cases, please consult a system that provides this kind of capability, such as a hyphenation algorithm.</p><p>Also note that this system is completely unaware of layouting decisions. Any kind of layouting decisions, such as which breaks to pick, how to space between words, how to handle bidirectionality, and what to do in emergency situations when there are no breaks on an overfull line are left up to the user.</p><p>The system passes all tests offered by the Unicode standard.</p><h2 id="How To">How To</h2><p>The system will compile binary database files on first load. Should anything go wrong during this process, a note is produced on load. If you would like to prevent this automated loading, push <code>uax-14-no-load</code> to <code><a href="#VARIABLE%20ORG.SHIRAKUMO.ALLOY.UAX-14%3A%2AFEATURES%2A" class="xref">*features*</a></code> before loading. You can then manually load the database files when convenient through <code><a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ALOAD-DATABASES" class="xref">load-databases</a></code>.</p><p>Once loaded, you can produce a list of line breaks for a string with <code><a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ALIST-BREAKS" class="xref">list-breaks</a></code> or break a string at every opportunity with <code><a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ABREAK-STRING" class="xref">break-string</a></code>. Typically however you will want to scan for the next break as you move along the string during layouting. To do so, create a breaker with <code><a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3AMAKE-BREAKER" class="xref">make-breaker</a></code>, and call <code><a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ANEXT-BREAK" class="xref">next-break</a></code> whenever the next line break opportunity is required.</p><p>In pseudo-code, that could look something like this. We assume the local nickname <code>uax-14</code> for <code>org.shirakumo.alloy.uax-14</code> here.</p><code style="display:block" class="code-block" data-language="ommon lisp"><pre>(<a href="http://l1sp.org/cl/loop" class="xref">loop</a> with breaker = (<a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3AMAKE-BREAKER" class="xref">uax-14:make-breaker</a> string)
+      with start = 0 and last = 0
+      do (multiple-value-bind (pos mandatory) (uax-14:next-break breaker)
+           (cond (mandatory
+                  (insert-break pos)
+                  (setf start pos))
+                 ((beyond-extents-p start pos)
+                  (if (&lt; last start) ; Force a break if we are overfull.
+                      (loop while (beyond-extents-p start pos)
+                            do (let ((next (find-last-fitting-cluster start)))
+                                 (insert-break next)
+                                 (setf start next))
+                            finally (setf pos start))
+                      (insert-break last))))
+           (setf last pos)))</pre></code><h2 id="External Files">External Files</h2><p>The following files are from their corresponding external sources, last accessed on 2019.09.03:</p><ul><li><p><code>LineBreak.txt</code> <a href="https://www.unicode.org/Public/UCD/latest/ucd/LineBreak.txt">https://www.unicode.org/Public/UCD/latest/ucd/LineBreak.txt</a></p></li><li><p><code>LineBreakTest.txt</code> <a href="https://www.unicode.org/Public/UCD/latest/ucd/auxiliary/LineBreakTest.txt">https://www.unicode.org/Public/UCD/latest/ucd/auxiliary/LineBreakTest.txt</a></p></li></ul><p>At the time, Unicode 12.1 was considered the latest version.</p><h2 id="Acknowledgements">Acknowledgements</h2><p>The code in this project is largely based on the <a class="external-link" href="https://github.com/foliojs/linebreak">linebreak</a> project by Devon Govett et al.</p></article></section>   <section id="system"> <h2>System Information</h2>  <div class="row"> <label for="version">Version:</label> <a id="version">1.0.0</a> </div>   <div class="row"> <label for="dependencies">Dependencies:</label> <ul id="dependencies"><li><a class="external" href="https://Shinmera.github.io/documentation-utils/">documentation-utils</a></li></ul> </div>   <div class="row"> <label for="author">Author:</label> <a id="author" href="mailto:shinmera@tymoon.eu">Nicolas Hafner</a> </div>   <div class="row"> <label for="license">License:</label> <a id="license" href="https://github.com/Shinmera/uax-14/blob/master/LICENSE">zlib</a> </div>   <div class="row"> <label for="homepage">Homepage:</label> <a id="homepage" href="https://github.com/Shinmera/uax-14">https://github.com/Shinmera/uax-14</a> </div>  </section>    <section id="index"> <h2>Definition Index</h2> <ul> <li> <article class="definition package" id="PACKAGE ORG.SHIRAKUMO.ALLOY.UAX-14"> <header> <h3> <a href="#PACKAGE%20ORG.SHIRAKUMO.ALLOY.UAX-14">ORG.SHIRAKUMO.ALLOY.UAX-14</a> </h3> <ul class="nicknames"></ul>  </header> <div class="docstring"><i>No documentation provided.</i></div> <ul class="definitions"> <li> <article class="definition special-variable" id="VARIABLE ORG.SHIRAKUMO.ALLOY.UAX-14:*LINE-BREAK-DATABASE-FILE*"> <header> <span class="visibility">EXTERNAL</span> <span class="type">SPECIAL-VARIABLE</span> <h4 class="name"> <a href="#VARIABLE%20ORG.SHIRAKUMO.ALLOY.UAX-14%3A%2ALINE-BREAK-DATABASE-FILE%2A">*LINE-BREAK-DATABASE-FILE*</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments"></ul>  </header> <div class="docstring"><pre>Variable containing the absolute path of the line break database file.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ALOAD-DATABASES" class="xref">LOAD-DATABASES</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ACOMPILE-DATABASES" class="xref">COMPILE-DATABASES</a></pre></div> </article> </li>  <li> <article class="definition special-variable" id="VARIABLE ORG.SHIRAKUMO.ALLOY.UAX-14:*PAIR-TABLE-FILE*"> <header> <span class="visibility">EXTERNAL</span> <span class="type">SPECIAL-VARIABLE</span> <h4 class="name"> <a href="#VARIABLE%20ORG.SHIRAKUMO.ALLOY.UAX-14%3A%2APAIR-TABLE-FILE%2A">*PAIR-TABLE-FILE*</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments"></ul>  </header> <div class="docstring"><pre>Variable containing the absolute path of the pair table file.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ALOAD-DATABASES" class="xref">LOAD-DATABASES</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ACOMPILE-DATABASES" class="xref">COMPILE-DATABASES</a></pre></div> </article> </li>  <li> <article class="definition structure" id="STRUCTURE ORG.SHIRAKUMO.ALLOY.UAX-14:BREAKER"> <header> <span class="visibility">EXTERNAL</span> <span class="type">STRUCTURE</span> <h4 class="name"> <a href="#STRUCTURE%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ABREAKER">BREAKER</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments"></ul>  <a class="source-link" href="https://github.com/Shinmera/uax-14/blob/master/uax-14.lisp#L71">Source</a>  </header> <div class="docstring"><pre>Contains line breaking state.
+
+An instance of this is only useful for passing to MAKE-BREAKER and
+NEXT-BREAK. It contains internal state that manages the line breaking
+algorithm.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3AMAKE-BREAKER" class="xref">MAKE-BREAKER</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ANEXT-BREAK" class="xref">NEXT-BREAK</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.ALLOY.UAX-14:BREAK-STRING"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ABREAK-STRING">BREAK-STRING</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">STRING</li>    <li class="argument lambda-list-keyword">&amp;OPTIONAL</li>    <li class="argument">MANDATORY-ONLY</li>    <li class="argument">BREAKER</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/uax-14/blob/master/uax-14.lisp#L193">Source</a>  </header> <div class="docstring"><pre>Returns a list of all the pieces of the string, broken.
+
+If MANDATORY-ONLY is T, the string is only split at mandatory line
+break opportunities, otherwise it is split at every opportunity.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3AMAKE-BREAKER" class="xref">MAKE-BREAKER</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ANEXT-BREAK" class="xref">NEXT-BREAK</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.ALLOY.UAX-14:COMPILE-DATABASES"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ACOMPILE-DATABASES">COMPILE-DATABASES</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments"></ul>  </header> <div class="docstring"><pre>Compiles the database files from their sources.
+
+This will load an optional part of the system and compile the database
+files to an efficient byte representation. If the compilation is
+successful, LOAD-DATABASES is called automatically.
+
+See <a href="#VARIABLE%20ORG.SHIRAKUMO.ALLOY.UAX-14%3A%2ALINE-BREAK-DATABASE-FILE%2A" class="xref">*LINE-BREAK-DATABASE-FILE*</a>
+See <a href="#VARIABLE%20ORG.SHIRAKUMO.ALLOY.UAX-14%3A%2APAIR-TABLE-FILE%2A" class="xref">*PAIR-TABLE-FILE*</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ALOAD-DATABASES" class="xref">LOAD-DATABASES</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.ALLOY.UAX-14:LIST-BREAKS"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ALIST-BREAKS">LIST-BREAKS</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">STRING</li>    <li class="argument lambda-list-keyword">&amp;OPTIONAL</li>    <li class="argument">BREAKER</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/uax-14/blob/master/uax-14.lisp#L187">Source</a>  </header> <div class="docstring"><pre>Returns a list of all line break opportunities in the string.
+
+The list has the following form:
+
+  LIST  ::= ENTRY+
+  ENTRY ::= (position mandatory)
+
+This is equivalent to constructing a breaker and collecting the values
+of NEXT-BREAK in a loop.
+
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3AMAKE-BREAKER" class="xref">MAKE-BREAKER</a>
+See <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ANEXT-BREAK" class="xref">NEXT-BREAK</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.ALLOY.UAX-14:LOAD-DATABASES"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ALOAD-DATABASES">LOAD-DATABASES</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments"></ul>  </header> <div class="docstring"><pre>Loads the databases from their files into memory.
+
+If one of the files is missing, a warning of type NO-DATABASE-FILES is
+signalled. If the loading succeeds, T is returned.
+
+See <a href="#VARIABLE%20ORG.SHIRAKUMO.ALLOY.UAX-14%3A%2ALINE-BREAK-DATABASE-FILE%2A" class="xref">*LINE-BREAK-DATABASE-FILE*</a>
+See <a href="#VARIABLE%20ORG.SHIRAKUMO.ALLOY.UAX-14%3A%2APAIR-TABLE-FILE%2A" class="xref">*PAIR-TABLE-FILE*</a>
+See NO-DATABASE-FILES</pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.ALLOY.UAX-14:MAKE-BREAKER"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3AMAKE-BREAKER">MAKE-BREAKER</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">STRING</li>    <li class="argument lambda-list-keyword">&amp;OPTIONAL</li>    <li class="argument">BREAKER</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/uax-14/blob/master/uax-14.lisp#L85">Source</a>  </header> <div class="docstring"><pre>Returns a breaker that can find line break opportunities in the given string.
+
+If the optional breaker argument is supplied, the supplied breaker is
+modified and reset to work with the new string instead. This allows
+you to re-use a breaker.
+
+Note that while you may pass a non-simple string, modifying this
+string without resetting any breaker using it will result in undefined
+behaviour.
+
+See <a href="#STRUCTURE%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ABREAKER" class="xref">BREAKER</a></pre></div> </article> </li>  <li> <article class="definition function callable" id="FUNCTION ORG.SHIRAKUMO.ALLOY.UAX-14:NEXT-BREAK"> <header> <span class="visibility">EXTERNAL</span> <span class="type">FUNCTION</span> <h4 class="name"> <a href="#FUNCTION%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ANEXT-BREAK">NEXT-BREAK</a> </h4> <ul class="qualifiers"></ul> <ul class="arguments">  <li class="argument">BREAKER</li>  </ul>  <a class="source-link" href="https://github.com/Shinmera/uax-14/blob/master/uax-14.lisp#L102">Source</a>  </header> <div class="docstring"><pre>Returns the next line breaking opportunity of the breaker, if any.
+
+Returns two values:
+
+  POSITION  --- The character index in the string at which the break
+                is located, or NIL if no further breaks are possible.
+  MANDATORY --- Whether the break must be made at this location.
+
+Note that there is always in the very least one break opportunity,
+namely at the end of the string. However, after consuming this break
+opportunity, NEXT-BREAK will return NIL.
+
+Note that you may have to insert additional line breaks as required by
+the layout constraints.
+
+See <a href="#STRUCTURE%20ORG.SHIRAKUMO.ALLOY.UAX-14%3ABREAKER" class="xref">BREAKER</a></pre></div> </article> </li> </ul> </article> </li> </ul> </section>  </article> <script>window.addEventListener("DOMContentLoaded", function(){
+    var unmarkElement = function(el){
+        if(el.tagName === "mark" || el.tagName === "MARK"){
+            [].forEach.call(el.childNodes, function(child){
+                el.parentNode.insertBefore(child, el);
+            });
+            el.parentNode.removeChild(el);
+        }else if(el.parentNode.tagName === "mark"){
+            return unmarkElement(el.parentNode);
+        }
+        return null;
+    }
+
+    var unmarkAll = function(root){
+        root = root || document;
+        [].forEach.call(root.querySelectorAll("mark"), unmarkElement);
+    }
+    
+    var markElement = function(el){
+        if(el.parentNode.tagName === "mark" || el.parentNode.tagName === "MARK"){
+            return el.parentNode;
+        } else {
+            unmarkAll();
+            var marked = document.createElement("mark");
+            el.parentNode.insertBefore(marked, el);
+            marked.appendChild(el);
+            return marked;
+        }
+    }
+
+    var markFragmented = function(){
+        if(window.location.hash){
+            var el = document.getElementById(decodeURIComponent(window.location.hash.substr(1)));
+            if(el) markElement(el);
+        }
+    }
+
+    var registerXrefLink = function(link){
+        var el = document.getElementById(decodeURIComponent(link.getAttribute("href").substr(1)));
+        if(el){
+            link.addEventListener("click", function(){
+                markElement(el);
+            });
+        }
+    }
+
+    var registerXrefLinks = function(root){
+        root = root || document;
+        [].forEach.call(root.querySelectorAll("a.xref"), registerXrefLink);
+    }
+
+    markFragmented();
+    registerXrefLinks();
+}); </script> </body> </html> 
