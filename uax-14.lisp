@@ -184,15 +184,23 @@
               (T
                (finish NIL NIL)))))))
 
-(defun list-breaks (string)
-  (loop with breaker = (make-breaker string)
-        for (pos weak) = (next-break breaker)
-        while pos
-        collect (cons pos weak)))
+(defun list-breaks (string &optional breaker)
+  (loop with breaker = (make-breaker string breaker)
+        for break = (multiple-value-list (next-break breaker))
+        while (first break)
+        collect break))
 
-(defun break-string (string)
-  (loop with breaker = (make-breaker string)
-        for last = 0 then pos
-        for (pos weak) = (multiple-value-list (next-break breaker))
-        while pos
-        collect (subseq string last pos)))
+(defun break-string (string &optional mandatory-only breaker)
+  (loop with breaker = (make-breaker string breaker)
+        with last = 0
+        for piece = (multiple-value-bind (pos mandatory) (next-break breaker)
+                      (cond (pos
+                             (when (or mandatory (not mandatory-only))
+                               (prog1 (subseq string last pos)
+                                 (setf last pos))))
+                            ((< last (length string))
+                             (prog1 (subseq string last)
+                               (setf last NIL)))
+                            (T
+                             (loop-finish))))
+        when piece collect piece))
