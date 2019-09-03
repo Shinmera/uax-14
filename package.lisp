@@ -11,4 +11,6 @@
    #:*pair-table-file*
    #:compile-databases
    #:make-breaker
-   #:next-break))
+   #:next-break
+   #:list-breaks
+   #:break-string))

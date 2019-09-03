@@ -179,3 +179,16 @@
                (finish (length string) NIL))
               (T
                (finish NIL NIL)))))))
+
+(defun list-breaks (string)
+  (loop with breaker = (make-breaker string)
+        for (pos weak) = (next-break breaker)
+        while pos
+        collect (cons pos weak)))
+
+(defun break-string (string)
+  (loop with breaker = (make-breaker string)
+        for last = 0 then pos
+        for (pos weak) = (multiple-value-list (next-break breaker))
+        while pos
+        collect (subseq string last pos)))

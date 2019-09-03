@@ -21,13 +21,6 @@
 
 (define-test uax-14)
 
-(defun string-breaks (string)
-  (loop with breaker = (uax-14:make-breaker string)
-        for last = 0 then pos
-        for (pos weak) = (multiple-value-list (uax-14:next-break breaker))
-        while pos
-        collect (subseq string last pos)))
-
 (define-test unicode-suite
   :parent uax-14
   (with-open-file (stream *test-file*
@@ -51,10 +44,10 @@
                         (string (map 'string #'code-char codes)))
                    (flet ((test ()
                             (eval-in-context *context* (make-instance 'comparison-result
-                                                                      :expression `(is equal ,expected (string-breaks ,string))
-                                                                      :value-form `(string-breaks ,string)
+                                                                      :expression `(is equal ,expected (uax-14:break-string ,string))
+                                                                      :value-form `(uax-14:break-string ,string)
                                                                       :expected expected
-                                                                      :body (lambda () (string-breaks string))
+                                                                      :body (lambda () (uax-14:break-string string))
                                                                       :comparison 'equal
                                                                       :description (format NIL "#~d" i)))))
                      (if (find i *skipped*)
