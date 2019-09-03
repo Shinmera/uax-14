@@ -119,60 +119,60 @@
                (setf last-class next-class)
                (multiple-value-bind (code new-pos) (code-point-at string last-pos)
                  (setf pos new-pos)
-                 (let ((next-class (normalize-break-id (line-break-id code))))
-                   ;; Explicit newline and CRLF handling
-                   (when (or (= (type-id :BK) cur-class)
-                             (and (= (type-id :CR) cur-class)
-                                  (/= (type-id :LF) next-class)))
-                     (setf cur-class (normalize-first-break next-class))
-                     (finish last-pos T))
-                   ;; Handle base breaking
-                   (let ((next-current (handle-simple-break next-class cur-class))
-                         (should-break NIL))
-                     (labels ((handle-extra-rules ()
-                                ;; LB8a
-                                (when LB8a
-                                  (setf should-break NIL))
-                                ;; LB21a
-                                (cond ((and LB21a
-                                            (or (= cur-class (type-id :HY))
-                                                (= cur-class (type-id :BA))))
-                                       (setf should-break NIL)
-                                       (setf LB21a NIL))
-                                      (T
-                                       (setf LB21a (= cur-class (type-id :HL)))))
-                                ;; LB30a
-                                (cond ((= cur-class (type-id :RI))
-                                       (setf LB30a (+ (the idx LB30a) 1))
-                                       (when (and (= LB30a 2)
-                                                  (= next-class (type-id :RI)))
-                                         (setf should-break T)
-                                         (setf LB30a 0)))
-                                      (T
+                 (setf next-class (normalize-break-id (line-break-id code)))
+                 ;; Explicit newline and CRLF handling
+                 (when (or (= (type-id :BK) cur-class)
+                           (and (= (type-id :CR) cur-class)
+                                (/= (type-id :LF) next-class)))
+                   (setf cur-class (normalize-first-break next-class))
+                   (finish last-pos T))
+                 ;; Handle base breaking
+                 (let ((next-current (handle-simple-break next-class cur-class))
+                       (should-break NIL))
+                   (labels ((handle-extra-rules ()
+                              ;; LB8a
+                              (when LB8a
+                                (setf should-break NIL))
+                              ;; LB21a
+                              (cond ((and LB21a
+                                          (or (= cur-class (type-id :HY))
+                                              (= cur-class (type-id :BA))))
+                                     (setf should-break NIL)
+                                     (setf LB21a NIL))
+                                    (T
+                                     (setf LB21a (= cur-class (type-id :HL)))))
+                              ;; LB30a
+                              (cond ((= cur-class (type-id :RI))
+                                     (setf LB30a (+ (the idx LB30a) 1))
+                                     (when (and (= LB30a 2)
+                                                (= next-class (type-id :RI)))
+                                       (setf should-break T)
                                        (setf LB30a 0)))
-                                (setf cur-class next-class))
-                              (handle-table-pairs ()
-                                (let ((pair (pair-type-id cur-class next-class)))
-                                  (cond ((= pair (pair-id :DI))
-                                         (setf should-break T)
-                                         (handle-extra-rules))
-                                        ((= pair (pair-id :IN))
-                                         (setf should-break (= last-class (type-id :SP)))
-                                         (handle-extra-rules))
-                                        ((= pair (pair-id :CI))
-                                         (setf should-break (= last-class (type-id :SP)))
-                                         (when should-break
-                                           (handle-extra-rules)))
-                                        ((= pair (pair-id :CP))
-                                         (when (= last-class (type-id :SP))
-                                           (handle-extra-rules)))))))
-                       (cond (next-current
-                              (setf cur-class next-current))
-                             (T
-                              (handle-table-pairs))))
-                     (setf LB8a (= next-class (type-id :ZWJ)))
-                     (when should-break
-                       (finish last-pos NIL))))))
+                                    (T
+                                     (setf LB30a 0)))
+                              (setf cur-class next-class))
+                            (handle-table-pairs ()
+                              (let ((pair (pair-type-id cur-class next-class)))
+                                (cond ((= pair (pair-id :DI))
+                                       (setf should-break T)
+                                       (handle-extra-rules))
+                                      ((= pair (pair-id :IN))
+                                       (setf should-break (= last-class (type-id :SP)))
+                                       (handle-extra-rules))
+                                      ((= pair (pair-id :CI))
+                                       (setf should-break (= last-class (type-id :SP)))
+                                       (when should-break
+                                         (handle-extra-rules)))
+                                      ((= pair (pair-id :CP))
+                                       (when (= last-class (type-id :SP))
+                                         (handle-extra-rules)))))))
+                     (cond (next-current
+                            (setf cur-class next-current))
+                           (T
+                            (handle-table-pairs))))
+                   (setf LB8a (= next-class (type-id :ZWJ)))
+                   (when should-break
+                     (finish last-pos NIL)))))
       (when (<= (length string) pos)
         (cond ((< last-pos (length string))
                (setf last-pos (length string))
