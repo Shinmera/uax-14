@@ -32,6 +32,7 @@
         (T
          id)))
 
+(declaim (inline code-point-at))
 (declaim (ftype (function (string idx) (values code idx)) code-point-at))
 (defun code-point-at (string start)
   (declare (type (vector character) string))
@@ -95,7 +96,7 @@
   breaker)
 
 (defun next-break (breaker)
-  (declare (optimize speed))
+  (declare (optimize speed (safety 1)))
   (let* ((string (breaker-string breaker))
          (pos (breaker-pos breaker))
          (last-pos (breaker-last-pos breaker))
@@ -129,7 +130,19 @@
                  ;; Handle base breaking
                  (let ((next-current (handle-simple-break next-class cur-class))
                        (should-break NIL))
-                   (labels ((handle-extra-rules ()
+                   (labels ((handle-table-pairs ()
+                              (let ((pair (pair-type-id cur-class next-class)))
+                                (cond ((= pair (pair-id :DI))
+                                       (setf should-break T))
+                                      ((= pair (pair-id :IN))
+                                       (setf should-break (= last-class (type-id :SP))))
+                                      ((= pair (pair-id :CI))
+                                       (setf should-break (= last-class (type-id :SP)))
+                                       (unless should-break
+                                         (return-from handle-table-pairs)))
+                                      ((= pair (pair-id :CP))
+                                       (unless (= last-class (type-id :SP))
+                                         (return-from handle-table-pairs)))))
                               ;; LB8a
                               (when LB8a
                                 (setf should-break NIL))
@@ -150,24 +163,7 @@
                                        (setf LB30a 0)))
                                     (T
                                      (setf LB30a 0)))
-                              (setf cur-class next-class))
-                            (handle-table-pairs ()
-                              (let ((pair (pair-type-id cur-class next-class)))
-                                (cond ((= pair (pair-id :DI))
-                                       (setf should-break T)
-                                       (handle-extra-rules))
-                                      ((= pair (pair-id :IN))
-                                       (setf should-break (= last-class (type-id :SP)))
-                                       (handle-extra-rules))
-                                      ((= pair (pair-id :CI))
-                                       (setf should-break (= last-class (type-id :SP)))
-                                       (when should-break
-                                         (handle-extra-rules)))
-                                      ((= pair (pair-id :CP))
-                                       (when (= last-class (type-id :SP))
-                                         (handle-extra-rules)))
-                                      (T
-                                       (handle-extra-rules))))))
+                              (setf cur-class next-class)))
                      (cond (next-current
                             (setf cur-class next-current))
                            (T
