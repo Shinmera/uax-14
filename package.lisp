@@ -12,6 +12,7 @@
    #:no-database-files
    #:load-databases
    #:compile-databases
+   #:breaker
    #:make-breaker
    #:next-break
    #:list-breaks

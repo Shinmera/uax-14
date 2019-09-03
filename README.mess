@@ -1,7 +1,44 @@
-## Don't look AAAAAAAAAAAAAA
+## About UAX-14
+This is an implementation of the "Unicode Standards Annex #14"(http://www.unicode.org/reports/tr14/)'s line breaking algorithm. It provides a fast and convenient way to determine line breaking opportunities in text.
+
+Note that this algorithm does not support break opportunities that require morphological analysis. In order to handle such cases, please consult a system that provides this kind of capability, such as a hyphenation algorithm.
+
+Also note that this system is completely unaware of layouting decisions. Any kind of layouting decisions, such as which breaks to pick, how to space between words, how to handle bidirectionality, and what to do in emergency situations when there are no breaks on an overfull line are left up to the user.
+
+The system passes all tests offered by the Unicode standard.
+
+## How To
+The system will compile binary database files on first load. Should anything go wrong during this process, a note is produced on load. If you would like to prevent this automated loading, push ``uax-14-no-load`` to ``*features*`` before loading. You can then manually load the database files when convenient through ``load-databases``.
+
+Once loaded, you can produce a list of line breaks for a string with ``list-breaks`` or break a string at every opportunity with ``break-string``. Typically however you will want to scan for the next break as you move along the string during layouting. To do so, create a breaker with ``make-breaker``, and call ``next-break`` whenever the next line break opportunity is required.
+
+In pseudo-code, that could look something like this, with extra code to handle emergencies.:
+
+::common lisp
+(loop with breaker = (uax-14:make-breaker string)
+      with start = 0
+      for last = 0 then pos
+      for (pos mandatory) = (uax-14:next-break breaker)
+      do (cond (mandatory
+                (insert-break pos)
+                (setf start pos))
+               ((beyond-extents-p start pos)
+                (if (< last start) ; Force a break if we are overfull.
+                    (loop while (beyond-extents-p start pos)
+                          do (let ((next (find-last-fitting-cluster start)))
+                               (insert-break next)
+                               (setf start next))
+                          finally (setf pos start))
+                    (insert-break last)))))
+::
 
 ## External Files
-The following files are from their corresponding external sources:
+The following files are from their corresponding external sources, last accessed on 2019.09.03:
 
 * ``LineBreak.txt`` https://www.unicode.org/Public/UCD/latest/ucd/LineBreak.txt
 * ``LineBreakTest.txt`` https://www.unicode.org/Public/UCD/latest/ucd/auxiliary/LineBreakTest.txt
+
+At the time, Unicode 12.1 was considered the latest version.
+
+## Acknowledgements
+The code in this project is largely based on the "linebreak"(https://github.com/foliojs/linebreak) project by Devon Govett et al.
