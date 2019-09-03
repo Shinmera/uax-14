@@ -78,6 +78,10 @@
   (lb21a NIL :type boolean)
   (lb30a 0 :type idx))
 
+(defmethod print-object ((breaker breaker) stream)
+  (print-unreadable-object (breaker stream :type T :identity T)
+    (format stream "@ ~d" (breaker-pos breaker))))
+
 (defun make-breaker (string &optional breaker)
   (if breaker
       (setf (breaker-string breaker) string)
