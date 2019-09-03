@@ -9,6 +9,8 @@
   (:export
    #:*line-break-database-file*
    #:*pair-table-file*
+   #:no-database-files
+   #:load-databases
    #:compile-databases
    #:make-breaker
    #:next-break

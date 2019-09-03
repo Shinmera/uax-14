@@ -91,6 +91,9 @@
 (defun pair-type (b a)
   (aref +pair-type-map+ (pair-type-id (char-line-break-id b) (char-line-break-id a))))
 
+(define-condition no-database-files (warning)
+  () (:report (lambda (c s) (format s "Database files are not available.~%Please run ~s" 'compile-databases))))
+
 (defun load-databases ()
   (restart-case
       (cond ((and (probe-file *line-break-database-file*)
@@ -99,7 +102,7 @@
              (load-pair-table)
              T)
             (T
-             (error "Database files not available. ~%Please run ~s" 'compile-databases)))
+             (error 'no-database-files)))
     (compile ()
       :report "Compile the databases and retry."
       (compile-databases))
@@ -112,6 +115,11 @@
   (funcall (find-symbol (string 'compile-databases) '#:org.shirakumo.alloy.uax-14.compiler))
   (load-databases))
 
-(handler-case (load-databases)
-  (error (e)
-    (format T "~&UAX-14: ~a" e)))
+(unless (find '#:uax-14-no-load *features* :test #'string=)
+  (handler-case
+      (handler-case (load-databases)
+        (no-database-files ()
+          (format T "~&UAX-14: Database files unavailable, compiling...~%")
+          (compile-databases)))
+    (error (e)
+      (format T "~&UAX-14: ~a" e))))
