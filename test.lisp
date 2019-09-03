@@ -34,7 +34,7 @@
                           :direction :input
                           :element-type 'character
                           :external-format :utf-8)
-    (loop for i from 0 below 100
+    (loop for i from 0 ;below 30
           for line = (read-line stream NIL)
           while line
           do (let ((comment (position #\# line)))
@@ -48,15 +48,15 @@
                                                   (map 'string #'code-char codes))))
                         (points (cl-ppcre:split "\\s*[×÷]\\s*" line :end (or comment (length line))))
                         (codes (mapcar #'parse-code (rest points)))
-                        (string (map 'string #'code-char codes))
-                        (breaks (string-breaks string)))
+                        (string (map 'string #'code-char codes)))
                    (flet ((test ()
                             (eval-in-context *context* (make-instance 'comparison-result
-                                                                      :expression `(is equal (string-breaks ,string) ,breaks)
+                                                                      :expression `(is equal ,expected (string-breaks ,string))
                                                                       :value-form `(string-breaks ,string)
                                                                       :expected expected
-                                                                      :body (lambda () breaks)
-                                                                      :comparison 'equal))))
+                                                                      :body (lambda () (string-breaks string))
+                                                                      :comparison 'equal
+                                                                      :description (format NIL "#~d" i)))))
                      (if (find i *skipped*)
                          (skip "Strange test" (test))
                          (test)))))))))
