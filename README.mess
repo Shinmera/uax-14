@@ -4,4 +4,4 @@
 The following files are from their corresponding external sources:
 
 * ``LineBreak.txt`` https://www.unicode.org/Public/UCD/latest/ucd/LineBreak.txt
-
+* ``LineBreakTest.txt`` https://www.unicode.org/Public/UCD/latest/ucd/auxiliary/LineBreakTest.txt

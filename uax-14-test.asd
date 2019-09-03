@@ -4,19 +4,16 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(asdf:defsystem uax-14
+(asdf:defsystem uax-14-test
   :version "0.0.0"
   :license "zlib"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
   :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
-  :description "Implementation of the Unicode Standards Annex #14's line breaking algorithm"
+  :description "Test system for UAX-14."
   :homepage "https://github.com/Shinmera/uax-14"
   :bug-tracker "https://github.com/Shinmera/uax-14/issues"
   :source-control (:git "https://github.com/Shinmera/uax-14.git")
   :serial T
-  :components ((:file "package")
-               (:file "database")
-               (:file "uax-14")
-               (:file "documentation"))
-  :depends-on (:documentation-utils)
-  :in-order-to ((asdf:test-op (asdf:test-op :uax-14-test))))
+  :components ((:file "test"))
+  :depends-on (:uax-14 :parachute :cl-ppcre)
+  :perform (asdf:test-op (op c) (uiop:symbol-call :parachute :test :org.shirakumo.alloy.uax-14.test)))

@@ -4,88 +4,172 @@
  Author: Nicolas Hafner <shinmera@tymoon.eu>
 |#
 
-(defpackage #:org.shirakumo.alloy.uax-14
-  (:use #:cl)
-  (:export
-   #:*line-break-database-file*
-   #:*pair-table-file*))
-
 (in-package #:org.shirakumo.alloy.uax-14)
 
-(defvar *here* #.(make-pathname :name NIL :type NIL :defaults
-                                (or *compile-file-truename* *load-truename*
-                                    (error "COMPILE-FILE or LOAD this file."))))
+(declaim (ftype (function ((unsigned-byte 8)) (unsigned-byte 8)) normalize-break-id))
+(defun normalize-break-id (id)
+  (declare (type (unsigned-byte 8) id))
+  (declare (optimize speed))
+  (cond ((or (= id (type-id :AI))
+             (= id (type-id :SA))
+             (= id (type-id :SG))
+             (= id (type-id :XX)))
+         (type-id :AL))
+        ((= id (type-id :CJ))
+         (type-id :NS))
+        (T
+         id)))
 
-(defvar *line-break-database-file* (make-pathname :name "LineBreak" :type "dat" :defaults *here*))
-(defvar *pair-table-file* (make-pathname :name "PairTable" :type "dat" :defaults *here*))
+(declaim (ftype (function ((unsigned-byte 8)) (unsigned-byte 8)) normalize-first-break))
+(defun normalize-first-break (id)
+  (declare (type (unsigned-byte 8) id))
+  (declare (optimize speed))
+  (cond ((or (= id (type-id :LF))
+             (= id (type-id :NL)))
+         (type-id :BK))
+        ((= id (type-id :SP))
+         (type-id :WJ))
+        (T
+         id)))
 
-(defmacro defglobal (name value)
-  #+sbcl `(sb-ext:defglobal ,name ,value)
-  #-sbcl `(defvar ,name ,value))
+(declaim (ftype (function (string idx) (values code idx)) code-point-at))
+(defun code-point-at (string start)
+  (declare (type (vector character) string))
+  (declare (type idx start))
+  (declare (optimize speed))
+  (let ((code (char-code (char string start)))
+        (next (if (< start (- (length string) 2))
+                  (char-code (char string (1+ start)))
+                  #x10FFFF)))
+    (if (and (< #xD800 code)
+             (<= code #xDBFF)
+             (<= #xDC00 next)
+             (<= next #xDFFF))
+        (values (+ (* (- code #xD800) #x400)
+                   (- next #xDC00)
+                   #x10000)
+                (+ start 2))
+        (values code
+                (+ start 1)))))
 
-(defglobal +line-break-type-map+
-    #(:OP :CL :CP :QU :GL :NS :EX :SY :IS :PR :PO :NU :AL :HL :ID
-      :IN :HY :BA :BB :B2 :ZW :CM :WJ :H2 :H3 :JL :JV :JT :RI :EB
-      :EM :ZWJ :CB :AI :BK :CJ :CR :LF :NL :SA :SG :SP :XX))
+(declaim (ftype (function ((unsigned-byte 8) (unsigned-byte 8)) (or null (unsigned-byte 8))) handle-simple-break))
+(defun handle-simple-break (next-class cur-class)
+  (declare (type (unsigned-byte 8) next-class cur-class))
+  (declare (optimize speed))
+  (cond ((= next-class (type-id :SP))
+         cur-class)
+        ((or (= next-class (type-id :BK))
+             (= next-class (type-id :LF))
+             (= next-class (type-id :NL)))
+         (type-id :BK))
+        ((= next-class (type-id :CR))
+         (type-id :CR))
+        (T
+         NIL)))
 
-(declaim (inline type-id))
-(defun type-id (type)
-  (position type +line-break-type-map+))
+(defstruct (breaker (:constructor %make-breaker (string)))
+  (string NIL :type string)
+  (pos 0 :type idx)
+  (cur-class 0 :type (unsigned-byte 8))
+  (next-class 0 :type (unsigned-byte 8))
+  (lb8a NIL :type boolean)
+  (lb21a NIL :type boolean)
+  (lb30a 0 :type idx))
 
-(defglobal +pair-type-map+
-    #(:DI :IN :CI :CP :PR))
+(defun make-breaker (string &optional breaker)
+  (if breaker
+      (setf (breaker-string breaker) string)
+      (setf breaker (%make-breaker string)))
+  (multiple-value-bind (code new-pos) (code-point-at string 0)
+    (let ((first-class (normalize-break-id (line-break-id code))))
+      (setf (breaker-pos breaker) new-pos)
+      (setf (breaker-cur-class breaker) (normalize-first-break first-class))
+      (setf (breaker-next-class breaker) first-class)
+      (setf (breaker-lb8a breaker) (= (type-id :ZWJ) first-class))
+      (setf (breaker-lb21a breaker) NIL)
+      (setf (breaker-lb30a breaker) 0)))
+  breaker)
 
-(declaim (inline pair-id))
-(defun pair-id (pair)
-  (position pair +pair-type-map+))
-
-(defglobal +line-break-map+ (make-array #x10FFFF :element-type '(unsigned-byte 8) :initial-element 0))
-
-(defun load-line-break-database (&optional (source *line-break-database-file*))
-  (with-open-file (stream source
-                          :direction :input
-                          :element-type '(unsigned-byte 8))
-    (loop with i = 0
-          while (< i (length +line-break-map+))
-          do (setf i (read-sequence +line-break-map+ stream :start i)))
-    +line-break-map+))
-
-(declaim (inline char-line-break-id))
-(defun char-line-break-id (char)
-  (aref +line-break-map+ (char-code char)))
-
-(defun char-line-break-type (char)
-  (aref +line-break-type-map+ (char-line-break-id char)))
-
-(defglobal +pair-table+ (make-array (expt (length +line-break-type-map+) 2) :element-type '(unsigned-byte 8) :initial-element 0))
-
-(defun load-pair-table (&optional (source *pair-table-file*))
-  (with-open-file (stream source
-                          :direction :input
-                          :element-type '(unsigned-byte 8))
-    (loop with i = 0
-          while (< i (length +pair-table+))
-          do (setf i (read-sequence +pair-table+ stream :start i)))
-    +pair-table+))
-
-(declaim (inline pair-type-id))
-(defun pair-type-id (b a)
-  (aref +pair-table+ (+ (char-line-break-id a)
-                        (* (char-line-break-id b)
-                           (length +line-break-type-map+)))))
-
-(defun pair-type (b a)
-  (aref +pair-type-map+ (pair-type-id b a)))
-
-(defun find-line-breaks (string breaks)
-  )
-
-
-
-;;; Load the tables.
-(cond ((and (probe-file *line-break-database-file*)
-            (probe-file *pair-table-file*))
-       (load-line-break-database)
-       (load-pair-table))
-      (T
-       (format T "~&UAX-14: Database files are not available. Please run the UAX-14 compiler.")))
+(defun next-break (breaker)
+  (declare (optimize speed))
+  (let* ((string (breaker-string breaker))
+         (pos (breaker-pos breaker))
+         (cur-class (breaker-cur-class breaker))
+         (next-class (breaker-next-class breaker))
+         (LB8a (breaker-LB8a breaker))
+         (LB21a (breaker-LB21a breaker))
+         (LB30a (breaker-LB30a breaker))
+         (last-pos pos)
+         last-class)
+    (flet ((finish (break-point mandatory-p)
+             (setf (breaker-pos breaker) pos)
+             (setf (breaker-cur-class breaker) cur-class)
+             (setf (breaker-next-class breaker) next-class)
+             (setf (breaker-LB8a breaker) LB8a)
+             (setf (breaker-LB21a breaker) LB21a)
+             (setf (breaker-LB30a breaker) LB30a)
+             (return-from next-break (values break-point mandatory-p))))
+      (loop while (< pos (length string))
+            do (setf last-pos pos)
+               (setf last-class next-class)
+               (multiple-value-bind (code new-pos) (code-point-at string last-pos)
+                 (setf pos new-pos)
+                 (let ((next-class (normalize-break-id (line-break-id code))))
+                   ;; Explicit newline and CRLF handling
+                   (when (or (= (type-id :BK) cur-class)
+                             (and (= (type-id :CR) cur-class)
+                                  (/= (type-id :LF) next-class)))
+                     (setf cur-class (normalize-first-break (normalize-break-id next-class)))
+                     (finish last-pos T))
+                   ;; Handle base breaking
+                   (let ((next-current (handle-simple-break next-class cur-class))
+                         (should-break NIL))
+                     (labels ((handle-extra-rules ()
+                                ;; LB8a
+                                (when LB8a
+                                  (setf should-break NIL))
+                                ;; LB21a
+                                (cond ((and LB21a
+                                            (or (= cur-class (type-id :HY))
+                                                (= cur-class (type-id :BA))))
+                                       (setf should-break NIL)
+                                       (setf LB21a NIL))
+                                      (T
+                                       (setf LB21a (= cur-class (type-id :HL)))))
+                                ;; LB30a
+                                (cond ((= cur-class (type-id :RI))
+                                       (setf LB30a (+ (the idx LB30a) 1))
+                                       (when (and (= LB30a 2)
+                                                  (= next-class (type-id :RI)))
+                                         (setf should-break T)
+                                         (setf LB30a 0)))
+                                      (T
+                                       (setf LB30a 0)))
+                                (setf cur-class next-class))
+                              (handle-table-pairs ()
+                                (let ((pair (pair-type-id cur-class next-class)))
+                                  (cond ((= pair (pair-id :DI))
+                                         (setf should-break T)
+                                         (handle-extra-rules))
+                                        ((= pair (pair-id :IN))
+                                         (setf should-break (= last-class (type-id :SP)))
+                                         (handle-extra-rules))
+                                        ((= pair (pair-id :CI))
+                                         (setf should-break (= last-class (type-id :SP)))
+                                         (when should-break
+                                           (handle-extra-rules)))
+                                        ((= pair (pair-id :CP))
+                                         (if (= last-class (type-id :SP))
+                                             (handle-extra-rules)
+                                             (return should-break)))))))
+                       (cond (next-current
+                              (setf cur-class next-current))
+                             (T
+                              (handle-table-pairs))))
+                     (setf LB8a (= (type-id :ZWJ) next-class))
+                     (when should-break
+                       (finish last-pos NIL))))))
+      (when (<= (length string) pos)
+        (if (< last-pos (length string))
+            (finish (length string) NIL)
+            (finish NIL NIL))))))

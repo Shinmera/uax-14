@@ -8,7 +8,10 @@
   (:use #:cl)
   (:local-nicknames
    (#:uax-14 #:org.shirakumo.alloy.uax-14))
-  (:export))
+  (:export
+   #:compile-line-break-database
+   #:compile-pair-table
+   #:compile-databases))
 
 (in-package #:org.shirakumo.alloy.uax-14.compiler)
 
@@ -96,3 +99,8 @@
                                 :if-exists :supersede)
           (write-sequence data stream))
         target))))
+
+(defun compile-databases ()
+  (values
+   (compile-line-break-database)
+   (compile-pair-table)))
