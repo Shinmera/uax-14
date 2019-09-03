@@ -54,7 +54,8 @@
                  (set-line-types data line))))
     (with-open-file (stream target
                             :direction :output
-                            :element-type '(unsigned-byte 8))
+                            :element-type '(unsigned-byte 8)
+                            :if-exists :supersede)
       (write-sequence data stream))
     target))
 
@@ -79,18 +80,19 @@
                             :direction :input
                             :element-type 'character
                             :external-format :utf-8)
-      (let ((As (cdr (split #\Tab (read-line stream)))))
+      (let ((As (cdr (split #\Space (read-line stream)))))
         (loop for line = (read-line stream NIL)
               while line
-              do (destructuring-bind (B . Vs) (split #\Tab line)
+              do (destructuring-bind (B . Vs) (split #\Space line)
                    (let ((row (uax-14::type-id (find-symbol B "KEYWORD"))))
                      (loop for A in As
                            for V in Vs
                            for col = (uax-14::type-id (find-symbol A "KEYWORD"))
                            for idx = (+ col (* row (length uax-14::+line-break-type-map+)))
-                           do (setf (aref data idx) (uax-14::pair-id (character V)))))))
+                           do (setf (aref data idx) (uax-14::pair-id (find-symbol V "KEYWORD")))))))
         (with-open-file (stream target
                                 :direction :output
-                                :element-type '(unsigned-byte 8))
+                                :element-type '(unsigned-byte 8)
+                                :if-exists :supersede)
           (write-sequence data stream))
         target))))

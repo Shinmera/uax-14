@@ -24,17 +24,16 @@
   #-sbcl `(defvar ,name ,value))
 
 (defglobal +line-break-type-map+
-  #(:XX :BK :CM :CR :GL :LF :NL :SP :WJ :ZW :ZWJ 
-    :AI :AL :B2 :BA :BB :CB :CJ :CL :CP :EB :EM
-    :EX :H2 :H3 :HL :HY :ID :IN :IS :JL :JT :JV
-    :NS :NU :OP :PO :PR :QU :RI :SA :SG :SY))
+    #(:OP :CL :CP :QU :GL :NS :EX :SY :IS :PR :PO :NU :AL :HL :ID
+      :IN :HY :BA :BB :B2 :ZW :CM :WJ :H2 :H3 :JL :JV :JT :RI :EB
+      :EM :ZWJ :CB :AI :BK :CJ :CR :LF :NL :SA :SG :SP :XX))
 
 (declaim (inline type-id))
 (defun type-id (type)
   (position type +line-break-type-map+))
 
 (defglobal +pair-type-map+
-    #(#\_ #\% #\# #\@ #\^))
+    #(:DI :IN :CI :CP :PR))
 
 (declaim (inline pair-id))
 (defun pair-id (pair)

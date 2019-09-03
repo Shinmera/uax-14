@@ -1,33 +1,34 @@
- 	OP	CL	CP	QU	GL	NS	EX	SY	IS	PR	PO	NU	AL	HL	ID	IN	HY	BA	BB	B2	ZW	CM	WJ	H2	H3	JL	JV	JT	RI	EB	EM	ZWJ
-OP	^	^	^	^	^	^	^	^	^	^	^	^	^	^	^	^	^	^	^	^	^	@	^	^	^	^	^	^	^	^	^	^
-CL	_	^	^	%	%	^	^	^	^	%	%	_	_	_	_	_	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-CP	_	^	^	%	%	^	^	^	^	%	%	%	%	%	_	_	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-QU	^	^	^	%	%	%	^	^	^	%	%	%	%	%	%	%	%	%	%	%	^	#	^	%	%	%	%	%	%	%	%	%
-GL	%	^	^	%	%	%	^	^	^	%	%	%	%	%	%	%	%	%	%	%	^	#	^	%	%	%	%	%	%	%	%	%
-NS	_	^	^	%	%	%	^	^	^	_	_	_	_	_	_	_	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-EX	_	^	^	%	%	%	^	^	^	_	_	_	_	_	_	%	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-SY	_	^	^	%	%	%	^	^	^	_	_	%	_	%	_	_	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-IS	_	^	^	%	%	%	^	^	^	_	_	%	%	%	_	_	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-PR	%	^	^	%	%	%	^	^	^	_	_	%	%	%	%	_	%	%	_	_	^	#	^	%	%	%	%	%	_	%	%	%
-PO	%	^	^	%	%	%	^	^	^	_	_	%	%	%	_	_	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-NU	%	^	^	%	%	%	^	^	^	%	%	%	%	%	_	%	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-AL	%	^	^	%	%	%	^	^	^	%	%	%	%	%	_	%	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-HL	%	^	^	%	%	%	^	^	^	%	%	%	%	%	_	%	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-ID	_	^	^	%	%	%	^	^	^	_	%	_	_	_	_	%	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-IN	_	^	^	%	%	%	^	^	^	_	_	_	_	_	_	%	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-HY	_	^	^	%	_	%	^	^	^	_	_	%	_	_	_	_	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-BA	_	^	^	%	_	%	^	^	^	_	_	_	_	_	_	_	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-BB	%	^	^	%	%	%	^	^	^	%	%	%	%	%	%	%	%	%	%	%	^	#	^	%	%	%	%	%	%	%	%	%
-B2	_	^	^	%	%	%	^	^	^	_	_	_	_	_	_	_	%	%	_	^	^	#	^	_	_	_	_	_	_	_	_	%
-ZW	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	_	^	_	_	_	_	_	_	_	_	_	_	_
-CM	%	^	^	%	%	%	^	^	^	%	%	%	%	%	_	%	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-WJ	%	^	^	%	%	%	^	^	^	%	%	%	%	%	%	%	%	%	%	%	^	#	^	%	%	%	%	%	%	%	%	%
-H2	_	^	^	%	%	%	^	^	^	_	%	_	_	_	_	%	%	%	_	_	^	#	^	_	_	_	%	%	_	_	_	%
-H3	_	^	^	%	%	%	^	^	^	_	%	_	_	_	_	%	%	%	_	_	^	#	^	_	_	_	_	%	_	_	_	%
-JL	_	^	^	%	%	%	^	^	^	_	%	_	_	_	_	%	%	%	_	_	^	#	^	%	%	%	%	_	_	_	_	%
-JV	_	^	^	%	%	%	^	^	^	_	%	_	_	_	_	%	%	%	_	_	^	#	^	_	_	_	%	%	_	_	_	%
-JT	_	^	^	%	%	%	^	^	^	_	%	_	_	_	_	%	%	%	_	_	^	#	^	_	_	_	_	%	_	_	_	%
-RI	_	^	^	%	%	%	^	^	^	_	_	_	_	_	_	_	%	%	_	_	^	#	^	_	_	_	_	_	%	_	_	%
-EB	_	^	^	%	%	%	^	^	^	_	%	_	_	_	_	%	%	%	_	_	^	#	^	_	_	_	_	_	_	_	%	%
-EM	_	^	^	%	%	%	^	^	^	_	%	_	_	_	_	%	%	%	_	_	^	#	^	_	_	_	_	_	_	_	_	%
-ZWJ	_	^	^	%	%	%	^	^	^	_	_	_	_	_	%	_	%	%	_	_	^	#	^	_	_	_	_	_	_	%	%	%
+// OP CL CP QU GL NS EX SY IS PR PO NU AL HL ID IN HY BA BB B2 ZW CM WJ H2 H3 JL JV JT RI EB EM ZWJ CB
+OP PR PR PR PR PR PR PR PR PR PR PR PR PR PR PR PR PR PR PR PR PR CP PR PR PR PR PR PR PR PR PR PR PR
+CL DI PR PR IN IN PR PR PR PR IN IN DI DI DI DI DI IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+CP DI PR PR IN IN PR PR PR PR IN IN IN IN IN DI DI IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+QU PR PR PR IN IN IN PR PR PR IN IN IN IN IN IN IN IN IN IN IN PR CI PR IN IN IN IN IN IN IN IN IN IN
+GL IN PR PR IN IN IN PR PR PR IN IN IN IN IN IN IN IN IN IN IN PR CI PR IN IN IN IN IN IN IN IN IN IN
+NS DI PR PR IN IN IN PR PR PR DI DI DI DI DI DI DI IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+EX DI PR PR IN IN IN PR PR PR DI DI DI DI DI DI IN IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+SY DI PR PR IN IN IN PR PR PR DI DI IN DI IN DI DI IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+IS DI PR PR IN IN IN PR PR PR DI DI IN IN IN DI DI IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+PR IN PR PR IN IN IN PR PR PR DI DI IN IN IN IN DI IN IN DI DI PR CI PR IN IN IN IN IN DI IN IN IN DI
+PO IN PR PR IN IN IN PR PR PR DI DI IN IN IN DI DI IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+NU IN PR PR IN IN IN PR PR PR IN IN IN IN IN DI IN IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+AL IN PR PR IN IN IN PR PR PR IN IN IN IN IN DI IN IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+HL IN PR PR IN IN IN PR PR PR IN IN IN IN IN DI IN IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+ID DI PR PR IN IN IN PR PR PR DI IN DI DI DI DI IN IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+IN DI PR PR IN IN IN PR PR PR DI DI DI DI DI DI IN IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+HY DI PR PR IN DI IN PR PR PR DI DI IN DI DI DI DI IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+BA DI PR PR IN DI IN PR PR PR DI DI DI DI DI DI DI IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+BB IN PR PR IN IN IN PR PR PR IN IN IN IN IN IN IN IN IN IN IN PR CI PR IN IN IN IN IN IN IN IN IN DI
+B2 DI PR PR IN IN IN PR PR PR DI DI DI DI DI DI DI IN IN DI PR PR CI PR DI DI DI DI DI DI DI DI IN DI
+ZW DI DI DI DI DI DI DI DI DI DI DI DI DI DI DI DI DI DI DI DI PR DI DI DI DI DI DI DI DI DI DI DI DI
+CM IN PR PR IN IN IN PR PR PR IN IN IN IN IN DI IN IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+WJ IN PR PR IN IN IN PR PR PR IN IN IN IN IN IN IN IN IN IN IN PR CI PR IN IN IN IN IN IN IN IN IN IN
+H2 DI PR PR IN IN IN PR PR PR DI IN DI DI DI DI IN IN IN DI DI PR CI PR DI DI DI IN IN DI DI DI IN DI
+H3 DI PR PR IN IN IN PR PR PR DI IN DI DI DI DI IN IN IN DI DI PR CI PR DI DI DI DI IN DI DI DI IN DI
+JL DI PR PR IN IN IN PR PR PR DI IN DI DI DI DI IN IN IN DI DI PR CI PR IN IN IN IN DI DI DI DI IN DI
+JV DI PR PR IN IN IN PR PR PR DI IN DI DI DI DI IN IN IN DI DI PR CI PR DI DI DI IN IN DI DI DI IN DI
+JT DI PR PR IN IN IN PR PR PR DI IN DI DI DI DI IN IN IN DI DI PR CI PR DI DI DI DI IN DI DI DI IN DI
+RI DI PR PR IN IN IN PR PR PR DI DI DI DI DI DI DI IN IN DI DI PR CI PR DI DI DI DI DI IN DI DI IN DI
+EB DI PR PR IN IN IN PR PR PR DI IN DI DI DI DI IN IN IN DI DI PR CI PR DI DI DI DI DI DI DI IN IN DI
+EM DI PR PR IN IN IN PR PR PR DI IN DI DI DI DI IN IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+ZWJ IN PR PR IN IN IN PR PR PR IN IN IN IN IN DI IN IN IN DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
+CB DI PR PR IN IN DI PR PR PR DI DI DI DI DI DI DI DI DI DI DI PR CI PR DI DI DI DI DI DI DI DI IN DI
