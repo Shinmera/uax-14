@@ -51,8 +51,8 @@
       `(load-time-value (position ,pair +pair-type-map+))
       whole))
 
-(declaim (type (simple-array (unsigned-byte 8) (#x10FFFF)) +line-break-map+))
-(defglobal +line-break-map+ (make-array #x10FFFF :element-type '(unsigned-byte 8) :initial-element 0))
+(declaim (type (simple-array (unsigned-byte 8) (#x110000)) +line-break-map+))
+(defglobal +line-break-map+ (make-array #x110000 :element-type '(unsigned-byte 8) :initial-element 0))
 
 (defun load-line-break-database (&optional (source *line-break-database-file*))
   (with-open-file (stream source

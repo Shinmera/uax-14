@@ -43,8 +43,7 @@
 
 (defun compile-line-break-database (&key (source (make-pathname :name "LineBreak" :type "txt" :defaults uax-14::*here*))
                                          (target uax-14:*line-break-database-file*))
-  (let ((data (make-array #x10FFFF :element-type '(unsigned-byte 8)
-                                   :initial-element (uax-14::type-id :XX))))
+  (let ((data uax-14::+line-break-map+))
     (set-default-types data)
     (with-open-file (stream source
                             :direction :input
