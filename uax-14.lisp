@@ -35,7 +35,7 @@
 (declaim (inline code-point-at))
 (declaim (ftype (function (string idx) (values code idx)) code-point-at))
 (defun code-point-at (string start)
-  (declare (type (vector character) string))
+  (declare (type string string))
   (declare (type idx start))
   (declare (optimize speed))
   (let ((code (char-code (char string start)))
