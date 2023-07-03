@@ -1,14 +1,8 @@
-#|
- This file is a part of UAX-14
- (c) 2019 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
- Author: Nicolas Hafner <shinmera@tymoon.eu>
-|#
-
 (asdf:defsystem uax-14-test
   :version "1.0.0"
   :license "zlib"
-  :author "Nicolas Hafner <shinmera@tymoon.eu>"
-  :maintainer "Nicolas Hafner <shinmera@tymoon.eu>"
+  :author "Yukari Hafner <shinmera@tymoon.eu>"
+  :maintainer "Yukari Hafner <shinmera@tymoon.eu>"
   :description "Test system for UAX-14."
   :homepage "https://github.com/Shinmera/uax-14"
   :bug-tracker "https://github.com/Shinmera/uax-14/issues"
