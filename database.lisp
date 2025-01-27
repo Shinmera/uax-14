@@ -83,7 +83,7 @@
   (aref +pair-table+ (+ a (* b (the (unsigned-byte 8) (length +line-break-type-map+))))))
 
 (defun pair-type (b a)
-  (aref +pair-type-map+ (pair-type-id (char-line-break-id b) (char-line-break-id a))))
+  (aref +pair-type-map+ (pair-type-id (line-break-id (char-code b)) (line-break-id (char-code a)))))
 
 (define-condition no-database-files (warning)
   () (:report (lambda (c s) (format s "Database files are not available.~%Please run ~s" 'compile-databases))))
