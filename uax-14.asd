@@ -4,9 +4,9 @@
   :author "Yukari Hafner <shinmera@tymoon.eu>"
   :maintainer "Yukari Hafner <shinmera@tymoon.eu>"
   :description "Implementation of the Unicode Standards Annex #14's line breaking algorithm"
-  :homepage "https://github.com/Shinmera/uax-14"
-  :bug-tracker "https://github.com/Shinmera/uax-14/issues"
-  :source-control (:git "https://github.com/Shinmera/uax-14.git")
+  :homepage "https://shinmera.com/project/uax-14"
+  :bug-tracker "https://shinmera.com/project/uax-14/issues"
+  :source-control (:git "https://shinmera.com/project/uax-14.git")
   :serial T
   :components ((:file "package")
                (:file "database")
